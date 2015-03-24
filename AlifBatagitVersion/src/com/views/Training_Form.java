@@ -1,20 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- *//*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- *//*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- *//*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 
 package com.views;
@@ -33,6 +16,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.font.FontRenderContext;
@@ -40,13 +25,16 @@ import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
+import java.util.Arrays;
 import java.util.Vector;
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -56,6 +44,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -253,12 +242,41 @@ public class Training_Form extends JFrame implements ActionListener {
         pausB.setText("Pause");
     }
 
-    public void getFileNameAndSaveFile() {
-        while (saveFileName == null) {
-            saveFileName = JOptionPane.showInputDialog(null, "Enter WAV File Name", "Getting File Name");
+    private String level_translate(JComboBox combo) {
+        String prefix_name = "";
+        if (combo.getSelectedItem().toString().equalsIgnoreCase("Level 1")) {
+            prefix_name = "level1_";
+        } else if (combo.getSelectedItem().toString().equalsIgnoreCase("Level 2")) {
+            prefix_name = "level2_";
+        } else if (combo.getSelectedItem().toString().equalsIgnoreCase("Level 3")) {
+            prefix_name = "level3_";
+        } else {
+            prefix_name = "error_prefix";
         }
-        wd.saveToFile(saveFileName, AudioFileFormat.Type.WAVE, audioInputStream);
+        return prefix_name;
+    }
 
+    public void getFileNameAndSaveFile() {
+        String prefixfile = level_translate(cblevel);
+        if (saveFileName != null && saveFileName.equalsIgnoreCase(prefixfile + txname.getText())) {
+            JOptionPane.showMessageDialog(this, "Apakah Masih Training Huruf:" + txname.getText(), "Informasi", JOptionPane.YES_NO_CANCEL_OPTION);
+        }
+        while (saveFileName == null || !saveFileName.equalsIgnoreCase(prefixfile + txname.getText())) {
+            saveFileName = JOptionPane.showInputDialog(this, "Apakah Training " + cblevel.getSelectedItem().toString() + " Huruf Hijaiyah berikut :", prefixfile + txname.getText());
+        }
+
+        wd.saveToFile(saveFileName, AudioFileFormat.Type.WAVE, audioInputStream);
+        wd.extractFloatDataFromAudioInputStream_saveToTXTFile(saveFileName, audioInputStream);
+
+    }
+
+    private Image getScaledImage(Image srcImg, int w, int h) {
+        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = resizedImg.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(srcImg, 0, 0, w, h, null);
+        g2.dispose();
+        return resizedImg;
     }
 
     /**
@@ -279,11 +297,11 @@ public class Training_Form extends JFrame implements ActionListener {
         btrecord = new javax.swing.JButton();
         txpath = new javax.swing.JTextField();
         btplay = new javax.swing.JButton();
-        imagePanel = new javax.swing.JPanel();
         playB = new javax.swing.JButton();
         saveB = new javax.swing.JButton();
         captB = new javax.swing.JButton();
         pausB = new javax.swing.JButton();
+        lbgambar = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -339,10 +357,6 @@ public class Training_Form extends JFrame implements ActionListener {
         getContentPane().add(btplay);
         btplay.setBounds(120, 150, 80, 30);
 
-        imagePanel.setBackground(new java.awt.Color(48, 200, 65));
-        getContentPane().add(imagePanel);
-        imagePanel.setBounds(430, 20, 200, 210);
-
         playB.setText("Play");
         getContentPane().add(playB);
         playB.setBounds(200, 210, 80, 27);
@@ -352,6 +366,11 @@ public class Training_Form extends JFrame implements ActionListener {
         playB.setFocusable(false);
 
         saveB.setText("Save");
+        saveB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveBActionPerformed(evt);
+            }
+        });
         getContentPane().add(saveB);
         saveB.setBounds(290, 210, 80, 27);
         saveB.setPreferredSize(new Dimension(85, 24));
@@ -374,6 +393,12 @@ public class Training_Form extends JFrame implements ActionListener {
         pausB.addActionListener(this);
         pausB.setEnabled(false);
         pausB.setFocusable(false);
+
+        lbgambar.setBackground(new java.awt.Color(0, 255, 68));
+        lbgambar.setForeground(new java.awt.Color(46, 54, 46));
+        lbgambar.setOpaque(true);
+        getContentPane().add(lbgambar);
+        lbgambar.setBounds(430, 30, 200, 220);
 
         setBounds(0, 0, 662, 424);
     }// </editor-fold>//GEN-END:initComponents
@@ -442,17 +467,35 @@ public class Training_Form extends JFrame implements ActionListener {
         int chooseOpt = jfc.showOpenDialog(this);
         if (chooseOpt == JFileChooser.APPROVE_OPTION) {
             File imagefile = jfc.getSelectedFile();
-            System.out.println("selected File " + imagefile);
-            txpath.setText(imagefile.toString());
-            imagePanel.updateUI();
-            ImagePanel panel = new ImagePanel(new ImageIcon(imagefile.toString()).getImage());
-             
-             getContentPane().add(panel);
-             panel.setBounds(430, 20, 200, 210);
-            
+            try {
+                Image image = getScaledImage(ImageIO.read(imagefile), lbgambar.getWidth(), lbgambar.getHeight());
+                BufferedImage img = (BufferedImage) image;
+                ImageIcon icon = new ImageIcon(img); // ADDED
+                lbgambar.setIcon(icon); // ADDED
+                txpath.setText(imagefile.toString());
+
+                Dimension imageSize = new Dimension(lbgambar.getWidth(), lbgambar.getHeight()); // ADDED
+                lbgambar.setPreferredSize(imageSize); // ADDED
+
+                lbgambar.revalidate(); // ADDED
+                lbgambar.repaint(); // ADDED
+            } catch (IOException e1) {
+            }
+
+//            System.out.println("selected File " + imagefile);
+//            txpath.setText(imagefile.toString());
+//            imagePanel.updateUI();
+//            ImagePanel panel = new ImagePanel(new ImageIcon(imagefile.toString()).getImage());
+//             
+//             getContentPane().add(panel);
+//             panel.setBounds(430, 20, 200, 210);
         }
 
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void saveBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_saveBActionPerformed
 
     public class Playback implements Runnable {
 
@@ -882,11 +925,11 @@ public class Training_Form extends JFrame implements ActionListener {
     private javax.swing.JButton btrecord;
     private javax.swing.JButton captB;
     private javax.swing.JComboBox cblevel;
-    private javax.swing.JPanel imagePanel;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel lbgambar;
     private javax.swing.JButton pausB;
     private javax.swing.JButton playB;
     private javax.swing.JButton saveB;
