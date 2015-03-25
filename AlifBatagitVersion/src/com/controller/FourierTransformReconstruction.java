@@ -18,12 +18,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import javax.sound.sampled.FloatControl;
 
 /**
  *
  * @author Fauziah Ifa Hasan
  */
 public class FourierTransformReconstruction {
+    
+    private static final int  SAMPLE_RATE=44100;
 
     public static void main(String[] argv) throws Exception {
         double hasil1 = calculate_diff("audio_file/level1_.wav", "audio/001_alif.txt");
@@ -58,13 +61,15 @@ public class FourierTransformReconstruction {
         Divide_And_Conquer divide_and_conquer;
         WaveDecoder decoder = new WaveDecoder(new FileInputStream(audioPath));
         float[] samples = new float[1024];
-        FFT fft = new FFT(1024, 44100);
+        FFT fft = new FFT(1024, SAMPLE_RATE);
         int i = 0;
         float[] datasample_fft;
         int limit = decoder.readSamples(samples);
         float[] datasample = new float[limit];
         while (decoder.readSamples(samples) > 0) {
             AutocorrellatedVoiceActivityDetector avd=new AutocorrellatedVoiceActivityDetector();
+            samples=avd.removeSilence(datasample, SAMPLE_RATE);
+   
          //   avd.removeSilence(voiceSample, limit);
             fft.forward(samples);
             datasample_fft = fft.inverse(samples);
