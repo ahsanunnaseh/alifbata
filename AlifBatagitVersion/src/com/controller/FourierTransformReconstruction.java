@@ -25,11 +25,11 @@ import java.util.Scanner;
 public class FourierTransformReconstruction {
 
     public static void main(String[] argv) throws Exception {
-        double hasil1 = calculate_diff("audio/001_alif.wav", "audio/001_alif.txt");
-        double hasil2 = calculate_diff("audio/001_123.wav", "audio/001_alif.txt");
-        double hasil3 = calculate_diff("audio/001_ccc.wav", "audio/001_alif.txt");
-        double hasil4 = calculate_diff("audio/001_dsds.wav", "audio/001_alif.txt");
-        double hasil5 = calculate_diff("audio/003_dfd.wav", "audio/001_alif.txt");
+        double hasil1 = calculate_diff("audio_file/level1_.wav", "audio/001_alif.txt");
+        double hasil2 = calculate_diff("audio_file/level1_.wav", "audio/001_alif.txt");
+        double hasil3 = calculate_diff("audio_file/level1_.wav", "audio/001_alif.txt");
+        double hasil4 = calculate_diff("audio_file/level1_.wav", "audio/001_alif.txt");
+        double hasil5 = calculate_diff("audio_file/level1_.wav", "audio/001_alif.txt");
 
         double[] data = {hasil1, hasil2, hasil3, hasil4, hasil5};
         float[] floatArray = new float[data.length];
