@@ -5,6 +5,7 @@
  */
 package com.controller;
 
+import com.util.AutocorrellatedVoiceActivityDetector;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,6 +64,8 @@ public class FourierTransformReconstruction {
         int limit = decoder.readSamples(samples);
         float[] datasample = new float[limit];
         while (decoder.readSamples(samples) > 0) {
+            AutocorrellatedVoiceActivityDetector avd=new AutocorrellatedVoiceActivityDetector();
+         //   avd.removeSilence(voiceSample, limit);
             fft.forward(samples);
             datasample_fft = fft.inverse(samples);
             divide_and_conquer = new Divide_And_Conquer(datasample_fft, datasample_fft.length);
