@@ -1,11 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.controller;
-
-import java.util.Arrays;
 
 /**
  *
@@ -66,12 +59,14 @@ public class FFT extends FourierTransform {
         buildTrigTables();
     }
 
+    @Override
     protected void allocateArrays() {
         spectrum = new float[timeSize / 2 + 1];
         real = new float[timeSize];
         imag = new float[timeSize];
     }
 
+    @Override
     public void scaleBand(int i, float s) {
         if (s < 0) {
             throw new IllegalArgumentException("Can't scale a frequency band by a negative value.");
@@ -89,6 +84,7 @@ public class FFT extends FourierTransform {
         }
     }
 
+    @Override
     public void setBand(int i, float a) {
         if (a < 0) {
             throw new IllegalArgumentException("Can't set a frequency band to a negative value.");
@@ -109,11 +105,11 @@ public class FFT extends FourierTransform {
         }
     }
 
-  // performs an in-place fft on the data in the real and imag arrays
+    // performs an in-place fft on the data in the real and imag arrays
     // bit reversing is not necessary as the data will already be bit reversed
     private void fft() {
         for (int halfSize = 1; halfSize < real.length; halfSize *= 2) {
-      // float k = -(float)Math.PI/halfSize;
+            // float k = -(float)Math.PI/halfSize;
             // phase shift step
             // float phaseShiftStepR = (float)Math.cos(k);
             // float phaseShiftStepI = (float)Math.sin(k);
@@ -172,7 +168,7 @@ public class FFT extends FourierTransform {
     }
 
     @Override
-        public float []  inverse(float[] buffer) {
+    public float[] inverse(float[] buffer) {
         if (buffer.length > real.length) {
             throw new IllegalArgumentException("FFT.inverse: the passed array's length must equal FFT.timeSize().");
         }
@@ -187,7 +183,7 @@ public class FFT extends FourierTransform {
             buffer[i] = real[i] / real.length;
         }
         return buffer;
-       // 
+        // 
     }
 
     private int[] reverse;
@@ -205,7 +201,7 @@ public class FFT extends FourierTransform {
         }
     }
 
-  // copies the values in the samples array into the real array
+    // copies the values in the samples array into the real array
     // in bit reversed order. the imag array is filled with zeros.
     private void bitReverseSamples(float[] samples) {
         for (int i = 0; i < samples.length; i++) {
@@ -226,7 +222,7 @@ public class FFT extends FourierTransform {
         imag = revImag;
     }
 
-  // lookup tables
+    // lookup tables
     private float[] sinlookup;
     private float[] coslookup;
 
