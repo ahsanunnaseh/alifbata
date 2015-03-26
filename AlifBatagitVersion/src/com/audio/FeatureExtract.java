@@ -21,25 +21,25 @@ import com.audio.preProcessing.MFCC;
  * 
  */
 public class FeatureExtract {
-	private float[][] framedSignal;
-	private int samplePerFrame;
-	private int noOfFrames;
+	private final float[][] framedSignal;
+	private final int samplePerFrame;
+	private final int noOfFrames;
 	/**
 	 * how many mfcc coefficients per frame
 	 */
-	private int numCepstra = 12;
+	private final int numCepstra = 12;
 
-	private double[][] featureVector;
-	private double[][] mfccFeature;
+	private final double[][] featureVector;
+	private final double[][] mfccFeature;
 	private double[][] deltaMfcc;
 	private double[][] deltaDeltaMfcc;
 	private double[] energyVal;
 	private double[] deltaEnergy;
 	private double[] deltaDeltaEnergy;
-	private FeatureVector fv;
-	private MFCC mfcc;
-	private Delta delta;
-	private Energy en;
+	private final FeatureVector fv;
+	private final MFCC mfcc;
+	private final Delta delta;
+	private final Energy en;
 
 	// FeatureVector fv;
 	/**
