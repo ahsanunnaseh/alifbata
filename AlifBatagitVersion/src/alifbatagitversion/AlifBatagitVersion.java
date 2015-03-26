@@ -20,6 +20,7 @@ public class AlifBatagitVersion {
     public static void main(String[] args) {
         Main_Frame main=new Main_Frame();
         main.setVisible(true);
+        main.dispose();
     }
     
 }
