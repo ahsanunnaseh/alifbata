@@ -93,7 +93,7 @@ public class FFT {
 	/**
 	 * performs Fast Fourier Transformation<br>
 	 */
-	private void FFT() {
+	public void FFT() {
 		if (numPoints == 1) { return; }
 		final double pi = Math.PI;
 		final int numStages = (int) (Math.log(numPoints) / Math.log(2));

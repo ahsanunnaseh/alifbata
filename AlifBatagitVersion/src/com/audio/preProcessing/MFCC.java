@@ -14,14 +14,14 @@ package com.audio.preProcessing;
  */
 public class MFCC {
 
-	private int numMelFilters = 30;// how much
-	private int numCepstra;// number of mfcc coeffs
-	private double preEmphasisAlpha = 0.95;
-	private double lowerFilterFreq = 80.00;// FmelLow
-	private double samplingRate;
-	private double upperFilterFreq;
+	private final int numMelFilters = 30;// how much
+	private final int numCepstra;// number of mfcc coeffs
+	private final double preEmphasisAlpha = 0.95;
+	private final double lowerFilterFreq = 80.00;// FmelLow
+	private final double samplingRate;
+	private final double upperFilterFreq;
 	private double bin[];
-	private int samplePerFrame;
+	private final int samplePerFrame;
 	// /////
 	FFT fft;
 	DCT dct;
