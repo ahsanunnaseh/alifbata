@@ -3,8 +3,8 @@
 package com.views;
 
 import com.audio.FormatControlConf;
-import com.audio.JSoundCapture;
 import com.audio.WaveData;
+import com.audio.preProcessing.FFT;
 import com.controller.JavaSoundRecorder;
 import com.util.Error_Message;
 import com.util.Global_Function;
@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
-import java.util.Arrays;
 import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFileFormat;
@@ -49,9 +48,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
 
 /**
  *
@@ -267,6 +263,9 @@ public class Training_Form extends JFrame implements ActionListener {
 
         wd.saveToFile(saveFileName, AudioFileFormat.Type.WAVE, audioInputStream);
         wd.extractFloatDataFromAudioInputStream_saveToTXTFile(saveFileName, audioInputStream);
+        float data [] =wd.extractFloatDataFromAudioInputStream(audioInputStream);
+        FFT fft=new FFT();
+        fft.computeFFT(data);
 
     }
 
@@ -294,9 +293,7 @@ public class Training_Form extends JFrame implements ActionListener {
         jLabel3 = new javax.swing.JLabel();
         txname = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        btrecord = new javax.swing.JButton();
         txpath = new javax.swing.JTextField();
-        btplay = new javax.swing.JButton();
         playB = new javax.swing.JButton();
         saveB = new javax.swing.JButton();
         captB = new javax.swing.JButton();
@@ -335,31 +332,13 @@ public class Training_Form extends JFrame implements ActionListener {
         getContentPane().add(jButton1);
         jButton1.setBounds(340, 110, 60, 30);
 
-        btrecord.setText("Record");
-        btrecord.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btrecordActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btrecord);
-        btrecord.setBounds(20, 150, 80, 30);
-
         txpath.setPreferredSize(new java.awt.Dimension(6, 25));
         getContentPane().add(txpath);
         txpath.setBounds(130, 110, 200, 25);
 
-        btplay.setText("Play");
-        btplay.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btplayActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btplay);
-        btplay.setBounds(120, 150, 80, 30);
-
         playB.setText("Play");
         getContentPane().add(playB);
-        playB.setBounds(200, 210, 80, 27);
+        playB.setBounds(200, 160, 80, 27);
         playB.setPreferredSize(new Dimension(85, 24));
         playB.addActionListener(this);
         playB.setEnabled(false);
@@ -372,15 +351,20 @@ public class Training_Form extends JFrame implements ActionListener {
             }
         });
         getContentPane().add(saveB);
-        saveB.setBounds(290, 210, 80, 27);
+        saveB.setBounds(290, 160, 80, 27);
         saveB.setPreferredSize(new Dimension(85, 24));
         saveB.addActionListener(this);
         saveB.setEnabled(false);
         saveB.setFocusable(false);
 
         captB.setText("Record");
+        captB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                captBActionPerformed(evt);
+            }
+        });
         getContentPane().add(captB);
-        captB.setBounds(20, 210, 80, 27);
+        captB.setBounds(20, 160, 80, 27);
         captB.setPreferredSize(new Dimension(85, 24));
         captB.addActionListener(this);
         captB.setEnabled(true);
@@ -388,7 +372,7 @@ public class Training_Form extends JFrame implements ActionListener {
 
         pausB.setText("Pause");
         getContentPane().add(pausB);
-        pausB.setBounds(110, 210, 80, 27);
+        pausB.setBounds(110, 160, 80, 27);
         pausB.setPreferredSize(new Dimension(85, 24));
         pausB.addActionListener(this);
         pausB.setEnabled(false);
@@ -402,51 +386,6 @@ public class Training_Form extends JFrame implements ActionListener {
 
         setBounds(0, 0, 662, 424);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btrecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btrecordActionPerformed
-        String namafile = txname.getText();
-        File[] files = global_function.scan_directory("audio/");
-        int prefix = 1;
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].toString().substring(10).equals(namafile + ".wav")) {
-                prefix++;
-            }
-
-        }
-        String prefix_name = "00" + String.valueOf(prefix);
-        final JavaSoundRecorder recorder = new JavaSoundRecorder(prefix_name, namafile);
-        if (btrecord.getText().startsWith("Record")) {
-            if (namafile.equals("")) {
-                error_message.confirm_dialog("Informasi ", "Isi Nama File Terlebih dahulu");
-            } else {
-                btplay.setText("Stop");
-                final long RECORD_TIME = 10000;  // 1 minute
-                Thread stopper = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(RECORD_TIME);
-                        } catch (InterruptedException ex) {
-                        }
-                        recorder.finish();
-                    }
-                });
-
-                stopper.start();
-                recorder.start();
-
-            }
-        } else {
-            recorder.finish();
-            btrecord.setText("Record");
-        }
-
-
-    }//GEN-LAST:event_btrecordActionPerformed
-
-    private void btplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btplayActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btplayActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
@@ -496,6 +435,10 @@ public class Training_Form extends JFrame implements ActionListener {
     private void saveBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_saveBActionPerformed
+
+    private void captBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_captBActionPerformed
 
     public class Playback implements Runnable {
 
@@ -921,8 +864,6 @@ public class Training_Form extends JFrame implements ActionListener {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btplay;
-    private javax.swing.JButton btrecord;
     private javax.swing.JButton captB;
     private javax.swing.JComboBox cblevel;
     private javax.swing.JButton jButton1;
